@@ -123,6 +123,8 @@ async function send(
   for (const [step, status] of Object.entries(jobSteps)) {
     checks.push(`${stepIcon(status.outcome)} ${step}`)
   }
+  core.debug(JSON.stringify(customFields, null, 2))
+
   const fields = customFields
   if (checks.length) {
     fields.push({
@@ -131,6 +133,7 @@ async function send(
       short: false
     })
   }
+  core.debug(JSON.stringify(fields, null, 2))
 
   const message = {
     username: 'GitHub Action',
