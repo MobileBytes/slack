@@ -1828,10 +1828,9 @@ function run() {
             const jobName = process.env.GITHUB_JOB;
             const jobStatus = core.getInput('status', { required: true }).toUpperCase();
             const jobSteps = JSON.parse(core.getInput('steps', { required: false }) || '{}');
-            const customFields = JSON.parse(core.getInput('custom', { required: false }) || '[]');
             const channel = core.getInput('channel', { required: false });
             if (url) {
-                yield (0, slack_1.default)(url, jobName, jobStatus, jobSteps, customFields, channel);
+                yield (0, slack_1.default)(url, jobName, jobStatus, jobSteps, channel);
                 core.debug('Sent to Slack.');
             }
             else {
@@ -8225,7 +8224,7 @@ function stepIcon(status) {
         return ':no_entry_sign:';
     return `:grey_question: ${status}`;
 }
-function send(url, jobName, jobStatus, jobSteps, customFields, channel) {
+function send(url, jobName, jobStatus, jobSteps, channel) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -8307,8 +8306,14 @@ function send(url, jobName, jobStatus, jobSteps, customFields, channel) {
         for (const [step, status] of Object.entries(jobSteps)) {
             checks.push(`${stepIcon(status.outcome)} ${step}`);
         }
-        core.debug(JSON.stringify(customFields, null, 2));
-        const fields = customFields;
+        const fields = [];
+        if (process.env.STAGE) {
+            fields.push({
+                title: 'Stage',
+                value: process.env.STAGE,
+                short: true
+            });
+        }
         if (checks.length) {
             fields.push({
                 title: 'Job Steps',
