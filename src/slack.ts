@@ -22,11 +22,6 @@ async function send(
   jobName: string,
   jobStatus: string,
   jobSteps: object,
-  customFields: {
-    title: string
-    value: string
-    short?: boolean
-  }[],
   channel?: string
 ): Promise<IncomingWebhookResult> {
   const eventName = process.env.GITHUB_EVENT_NAME
@@ -123,9 +118,15 @@ async function send(
   for (const [step, status] of Object.entries(jobSteps)) {
     checks.push(`${stepIcon(status.outcome)} ${step}`)
   }
-  core.debug(JSON.stringify(customFields, null, 2))
 
-  const fields = customFields
+  const fields = [];
+  if (process.env.STAGE) {
+    fields.push({
+      title: 'Stage',
+      value: process.env.STAGE,
+      short: true
+    })
+  }
   if (checks.length) {
     fields.push({
       title: 'Job Steps',
