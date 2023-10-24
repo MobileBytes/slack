@@ -15,7 +15,6 @@ inputs:
     description: Add custom fields to slack notification
     required: false
 runs:
-  using: 'node12'
   main: 'dist/index.js'
 branding:
   icon: alert-circle
